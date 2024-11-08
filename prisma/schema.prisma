@@ -13,16 +13,79 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum UserType{
+enum UserType {
   Superadmin
   Admin
   User
 }
 
 model User {
-  id                 Int              @id @default(autoincrement())
-  name               String?
-  email              String           @unique
-  password           String?
-  userType           UserType
+  id       Int      @id @default(autoincrement())
+  name     String?
+  email    String   @unique
+  password String?
+  userType UserType
+}
+
+model Pages {
+  id                   Int     @id @default(autoincrement())
+  title                String?
+  url                  String?
+  parent               String?
+  custom_css           String?
+  show_in_root_sitemap Int?
+  sitemap              Int?
+  separate_siteMap     Int?
+  is_blog              Int?
+  meta_tags            Int?
+  link_canonicals      Int?
+  open_graph           Int?
+  twitter_tags         Int?
+  script_code          Int?
+  link_canonical       String?
+  script_code_url      String?
+  status               Int     @default(1)
+
+  metaTags     Meta_tags[] // Defines a one-to-many relationship with Meta_tags
+  Open_graph   Open_graph[]
+  Tweeter_tags Tweeter_tags[]
+}
+
+model Meta_tags {
+  id         Int     @id @default(autoincrement())
+  page_id    Int
+  meta_title String?
+  meta_desc  String?
+  meta_key   String?
+  page       Pages   @relation(fields: [page_id], references: [id]) // Sets up foreign key relationship with Pages model
+
+  @@index([page_id]) // Optional, creates an index on page_id for faster lookups
+}
+
+model Open_graph {
+  id          Int     @id @default(autoincrement())
+  page_id     Int
+  title       String?
+  image       String?
+  url         String?
+  description String?
+  type        String?
+
+  page Pages @relation(fields: [page_id], references: [id]) // Sets up foreign key relationship with Pages model
+
+  @@index([page_id]) // Optional, creates an index on page_id for faster lookups
+}
+
+model Tweeter_tags {
+  id          Int     @id @default(autoincrement())
+  page_id     Int
+  title       String?
+  image       String?
+  url         String?
+  description String?
+  card        String?
+
+  page Pages @relation(fields: [page_id], references: [id]) // Sets up foreign key relationship with Pages model
+
+  @@index([page_id]) // Optional, creates an index on page_id for faster lookups
 }
